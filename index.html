@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e2c">
+<title>Árboles de Chile · Guía de bolsillo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  
+  :root {
+    --verde-oscuro: #1f4e2c;
+    --verde-medio: #2e6b3f;
+    --verde-claro: #4a8e5e;
+    --crema: #fdfbf4;
+    --crema-oscuro: #f0ead6;
+    --beige: #f5f1e8;
+    --marron: #8b6f3a;
+    --marron-claro: #c9a877;
+    --texto: #2a2a2a;
+    --texto-sec: #6b6b6b;
+    --borde: #d4c9a8;
+    --amarillo: #f0d96a;
+    --amarillo-claro: #fef4d4;
+    --azul-norte: #d99060;
+    --verde-centro: #6b9c4a;
+    --azul-sur: #4a89b8;
+  }
+  
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: var(--beige);
+    color: var(--texto);
+    line-height: 1.55;
+    font-size: 16px;
+    padding-bottom: 60px;
+  }
+  
+  /* === PORTADA === */
+  .portada {
+    background: linear-gradient(160deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+    color: var(--crema);
+    padding: 50px 24px 40px;
+    text-align: center;
+  }
+  .portada::before {
+    content: '🌲';
+    font-size: 3em;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .portada h1 {
+    font-size: 1.9em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .portada .lema {
+    font-size: 1em;
+    opacity: 0.85;
+    font-style: italic;
+    margin-bottom: 18px;
+  }
+  .portada .meta {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85em;
+  }
+  
+  /* === BARRA BÚSQUEDA + FILTROS === */
+  .barra-busqueda {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--beige);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--borde);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .barra-busqueda input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    background: white;
+    font-family: inherit;
+    color: var(--texto);
+  }
+  .barra-busqueda input:focus {
+    outline: none;
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 3px rgba(46, 107, 63, 0.15);
+  }
+  
+  .filtros-zona {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .filtro-btn {
+    flex: 1;
+    min-width: 70px;
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: 18px;
+    padding: 8px 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--texto-sec);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .filtro-btn:active { transform: scale(0.97); }
+  .filtro-btn.activo[data-zona="Todas"] { background: var(--verde-medio); color: white; border-color: var(--verde-medio); }
+  .filtro-btn.activo[data-zona="Norte"] { background: var(--azul-norte); color: white; border-color: var(--azul-norte); }
+  .filtro-btn.activo[data-zona="Centro"] { background: var(--verde-centro); color: white; border-color: var(--verde-centro); }
+  .filtro-btn.activo[data-zona="Sur"] { background: var(--azul-sur); color: white; border-color: var(--azul-sur); }
+  .filtro-emoji { font-size: 1.1em; }
+  .filtro-count { border-radius: 10px; padding: 0 6px; font-size: 0.78em; margin-left: 2px; }
+  .filtro-btn.activo .filtro-count { background: rgba(0,0,0,0.15); color: white; }
+  .filtro-btn:not(.activo) .filtro-count { background: var(--crema-oscuro); color: var(--marron); }
+  
+  /* === ÍNDICE === */
+  .indice { background: var(--crema); padding: 28px 20px; border-bottom: 1px solid var(--borde); }
+  .indice h2 { color: var(--verde-oscuro); font-size: 1.3em; margin-bottom: 6px; text-align: center; }
+  .indice .tip { text-align: center; color: var(--texto-sec); font-size: 0.85em; margin-bottom: 20px; font-style: italic; }
+  .indice-lista { list-style: none; display: grid; gap: 4px; }
+  .indice-lista li a { display: flex; align-items: center; gap: 12px; padding: 12px 10px; background: white; border-radius: 8px; text-decoration: none; color: var(--texto); border-left: 3px solid var(--verde-medio); }
+  .indice-lista li a:active { background: var(--crema-oscuro); }
+  .indice-num { background: var(--verde-medio); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: 700; flex-shrink: 0; }
+  .indice-nombre { display: flex; flex-direction: column; min-width: 0; }
+  .indice-nombre em { font-style: italic; font-weight: 600; color: var(--verde-oscuro); font-size: 0.95em; overflow: hidden; text-overflow: ellipsis; }
+  .indice-nombre small { color: var(--texto-sec); font-size: 0.8em; margin-top: 2px; }
+  
+  /* === FICHAS === */
+  .ficha { background: var(--crema); padding: 26px 20px 22px; margin: 14px 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); scroll-margin-top: 110px; }
+  .ficha-header { border-bottom: 2px solid var(--verde-oscuro); padding-bottom: 14px; margin-bottom: 18px; }
+  .ficha-num { color: var(--marron); font-size: 0.75em; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+  .familia-tag { color: var(--verde-medio); font-weight: 600; }
+  .nombre-cientifico { font-size: 1.4em; color: var(--verde-oscuro); font-weight: 400; line-height: 1.2; margin-bottom: 8px; }
+  .nombre-cientifico em { font-style: italic; font-weight: 600; }
+  .nombre-cientifico .autor { font-size: 0.65em; color: var(--texto-sec); font-weight: 400; }
+  .nombres-comunes { color: var(--marron); font-size: 0.95em; font-weight: 500; line-height: 1.4; margin-bottom: 10px; }
+  
+  /* === STATUS BADGE === */
+  .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.78em; font-weight: 600; margin-top: 4px; cursor: help; }
+  .status-endemico-chile { background: #ffe8e0; color: #8b4513; border: 1px solid #d4a373; }
+  .status-endemico-region { background: #fff4d4; color: #6b5520; border: 1px solid #e8c668; }
+  .status-nativo { background: #d8ebe0; color: #1f4e2c; border: 1px solid #a3c9b0; }
+  
+  /* === BLOQUES === */
+  .bloque { margin-bottom: 12px; background: white; border-radius: 8px; padding: 12px 14px; border-left: 3px solid var(--verde-claro); }
+  .bloque-titulo { font-size: 0.8em; text-transform: uppercase; letter-spacing: 1.2px; color: var(--verde-oscuro); font-weight: 700; margin-bottom: 8px; }
+  
+  /* CONTEXTO DE ILUSTRACIÓN FLEXIBLE */
+  .desc-flex-container { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; background: var(--beige); padding: 8px; border-radius: 8px; }
+  .desc-general { font-size: 0.95em; color: var(--texto); line-height: 1.55; margin: 0; }
+  .ilustracion-botanica { background: white; border-radius: 50%; border: 1px solid var(--borde); flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); }
+  
+  .desc-items { border-top: 1px dashed var(--borde); padding-top: 10px; display: grid; gap: 8px; }
+  .desc-item { font-size: 0.92em; line-height: 1.5; color: var(--texto); padding-left: 8px; border-left: 2px solid var(--crema-oscuro); }
+  .desc-label { font-weight: 700; color: var(--verde-oscuro); display: inline-block; min-width: 90px; }
+  
+  .bloque.distribucion { border-left-color: var(--marron); background: linear-gradient(to right, #fef9e7 0%, white 80%); }
+  .bloque.curiosidad { border-left-color: var(--amarillo); background: linear-gradient(to right, var(--amarillo-claro) 0%, white 80%); }
+  .bloque.curiosidad p { font-style: italic; color: #5a4d20; }
+  
+  /* === MAPA === */
+  .mapa-wrapper { margin-top: 14px; background: white; padding: 10px; border-radius: 6px; border: 1px solid var(--borde); }
+  .mapa-chile { display: block; width: 100%; max-width: 340px; height: auto; margin: 0 auto; }
+  
+  /* === FOTOS LINKS === */
+  .bloque-fotos { background: linear-gradient(to right, #e8f0e8, white); padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--verde-medio); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.9em; }
+  .fotos-label { font-weight: 600; color: var(--verde-oscuro); margin-right: 4px; }
+  .bloque-fotos a { background: var(--verde-medio); color: white; padding: 5px 12px; border-radius: 14px; text-decoration: none; font-size: 0.85em; font-weight: 500; }
+  .bloque-fotos a:active { background: var(--verde-oscuro); }
+  
+  /* === BOTÓN VOLVER ARRIBA === */
+  .btn-arriba { position: fixed; bottom: 16px; right: 16px; width: 48px; height: 48px; background: var(--verde-oscuro); color: white; border-radius: 50%; border: none; font-size: 1.4em; box-shadow: 0 3px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; opacity: 0; transform: translateY(20px); transition: opacity 0.2s, transform 0.2s; display: flex; align-items: center; justify-content: center; }
+  .btn-arriba.visible { opacity: 1; transform: translateY(0); }
+  
+  .ficha.oculta { display: none; }
+  .indice.oculto { display: none; }
+  .resultado-vacio { text-align: center; padding: 40px 20px; color: var(--texto-sec); font-style: italic; display: none; }
+  .resultado-vacio.visible { display: block; }
+  
+  /* === LEYENDA STATUS === */
+  .leyenda { background: var(--crema); margin: 14px 12px; padding: 16px 18px; border-radius: 12px; border-left: 4px solid var(--verde-medio); }
+  .leyenda h3 { color: var(--verde-oscuro); font-size: 1em; margin-bottom: 10px; }
+  .leyenda-items { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.85em; }
+  
+  /* === PIE === */
+  .pie { text-align: center; padding: 30px 24px 20px; color: var(--texto-sec); font-size: 0.8em; line-height: 1.6; }
+  .pie p { margin-bottom: 8px; }
+  
+  /* === RESPONSIVE === */
+  @media (min-width: 700px) {
+    body { font-size: 17px; }
+    .portada { padding: 70px 24px 50px; }
+    .portada h1 { font-size: 2.5em; }
+    .indice { padding: 40px 24px; }
+    .indice-lista { grid-template-columns: repeat(2, 1fr); max-width: 900px; margin: 0 auto; }
+    .ficha { max-width: 800px; margin: 18px auto; padding: 32px 30px 28px; }
+    .nombre-cientifico { font-size: 1.6em; }
+    .leyenda { max-width: 800px; margin: 14px auto; }
+    .barra-busqueda { padding: 12px 16px; }
+    .filtros-zona { max-width: 800px; margin-left: auto; margin-right: auto; }
+    .desc-label { min-width: 110px; }
+  }
+  @media (min-width: 1000px) { .indice-lista { grid-template-columns: repeat(3, 1fr); max-width: 1100px; } }
+  @media print { body { background: white; font-size: 11pt; } .portada, .barra-busqueda, .btn-arriba, .indice { display: none; } .ficha { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; margin: 10px 0; } }
+</style>
+</head>
+<body>
+
+<header class="portada">
+  <h1>Árboles Nativos<br>de Chile</h1>
+  <p class="lema">Guía botánica de bolsillo</p>
+  <div class="meta">43 especies · ordenadas A-Z</div>
+</header>
+
+<div class="barra-busqueda">
+  <input type="text" id="buscador" placeholder="🔍 Buscar por nombre, familia o región..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div class="filtros-zona" id="filtrosZona">
+    <button class="filtro-btn activo" data-zona="Todas">
+      <span class="filtro-emoji">🌎</span>Todas <span class="filtro-count" id="count-Todas"></span>
+    </button>
+    <button class="filtro-btn" data-zona="Norte">
+      <span class="filtro-emoji">🏜️</span>Norte <span class="filtro-count" id="count-Norte"></span>
+    </button>
+    <button class="filtro-btn" data-zona="Centro">
+      <span class="filtro-emoji">🌳</span>Centro <span class="filtro-count" id="count-Centro"></span>
+    </button>
+    <button class="filtro-btn" data-zona="Sur">
+      <span class="filtro-emoji">🌲</span>Sur <span class="filtro-count" id="count-Sur"></span>
+    </button>
+  </div>
+</div>
+
+<div class="leyenda">
+  <h3>Estado de origen</h3>
+  <div class="leyenda-items">
+    <span class="status-badge status-endemico-chile">Endémico de Chile</span>
+    <span class="status-badge status-endemico-region">Endémico Chile-Argentina</span>
+    <span class="status-badge status-nativo">Nativo (no endémico)</span>
+  </div>
+  <p style="margin-top: 10px; font-size: 0.82em; color: var(--texto-sec);">
+    <b>Endémico:</b> solo vive aquí. <b>Nativo:</b> es originario pero también crece en otros países. Todas las especies de esta guía son nativas (ninguna fue introducida).
+  </p>
+</div>
+
+<nav class="indice" id="indice">
+  <h2>📑 Índice</h2>
+  <p class="tip">Toca un árbol para ir a su ficha. Usa el botón ↑ para volver aquí.</p>
+  <ol class="indice-lista">
+    <li><a href="#acacia-caven"><span class="indice-num">01</span><span class="indice-nombre"><em>Acacia caven</em><small>Espino</small></span></a></li>
+    <li><a href="#aextoxicon-punctatum"><span class="indice-num">02</span><span class="indice-nombre"><em>Aextoxicon punctatum</em><small>Olivillo</small></span></a></li>
+    <li><a href="#araucaria-araucana"><span class="indice-num">03</span><span class="indice-nombre"><em>Araucaria araucana</em><small>Araucaria</small></span></a></li>
+    <li><a href="#austrocedrus-chilensis"><span class="indice-num">04</span><span class="indice-nombre"><em>Austrocedrus chilensis</em><small>Ciprés de la cordillera</small></span></a></li>
+    <li><a href="#beilschmiedia-berteroana"><span class="indice-num">05</span><span class="indice-nombre"><em>Beilschmiedia berteroana</em><small>Belloto del sur</small></span></a></li>
+    <li><a href="#beilschmiedia-miersii"><span class="indice-num">06</span><span class="indice-nombre"><em>Beilschmiedia miersii</em><small>Belloto del norte</small></span></a></li>
+    <li><a href="#citronella-mucronata"><span class="indice-num">07</span><span class="indice-nombre"><em>Citronella mucronata</em><small>Naranjillo</small></span></a></li>
+    <li><a href="#cryptocarya-alba"><span class="indice-num">08</span><span class="indice-nombre"><em>Cryptocarya alba</em><small>Peumo</small></span></a></li>
+    <li><a href="#dasyphyllum-diacanthoides"><span class="indice-num">09</span><span class="indice-nombre"><em>Dasyphyllum diacanthoides</em><small>Trevo</small></span></a></li>
+    <li><a href="#drimys-winteri"><span class="indice-num">10</span><span class="indice-nombre"><em>Drimys winteri</em><small>Canelo</small></span></a></li>
+    <li><a href="#embothrium-coccineum"><span class="indice-num">11</span><span class="indice-nombre"><em>Embothrium coccineum</em><small>Notro</small></span></a></li>
+    <li><a href="#eucryphia-cordifolia"><span class="indice-num">12</span><span class="indice-nombre"><em>Eucryphia cordifolia</em><small>Ulmo</small></span></a></li>
+    <li><a href="#fitzroya-cupressoides"><span class="indice-num">13</span><span class="indice-nombre"><em>Fitzroya cupressoides</em><small>Alerce</small></span></a></li>
+    <li><a href="#gevuina-avellana"><span class="indice-num">14</span><span class="indice-nombre"><em>Gevuina avellana</em><small>Avellano</small></span></a></li>
+  </ol>
+</nav>
+
+<div class="resultado-vacio" id="vacio">
+  <p>No se encontraron árboles que coincidan con tu búsqueda.</p>
+</div>
+
+<article class="ficha" id="acacia-caven" data-buscable="acacia caven espino espinillo caven churqui fabaceae coquimbo valparaiso metropolitana o higgins maule nuble biobio arbol o arbusto pequeno espinoso 2 6 m caracteristico del espinal del valle central copa aparasolada nativo no endemico de chile en mapudungun se le conoce como caven o caben no tiene descomposicion de raices documentada es una palabra primaria el nombre churqui usado en zonas andinas viene del quechua" data-zonas="Norte,Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 01 · <span class="familia-tag">Fabaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Acacia caven</em> <span class="autor">(Molina) Molina</span></h2>
+    <div class="nombres-comunes">Espino, Espinillo, Caven, Churqui</div>
+    <div class="status-badge status-nativo" title="Especie nativa de Chile pero también presente naturalmente en Argentina, Uruguay, Paraguay, Bolivia y sur de Brasil.">Nativo (no endémico de Chile)</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Acacia caven">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 40 72 Q 42 48 38 38 T 58 22 M 38 38 Q 24 32 20 18 M 42 50 Q 55 42 64 45" stroke="#5a4d20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 38 40 L 28 43 M 38 40 L 32 48 M 45 46 L 54 48 M 41 32 L 48 26" stroke="#c9a877" stroke-width="1.5" fill="none"/>
+        <circle cx="58" cy="22" r="5.5" fill="#f0d96a" stroke="#8b6f3a" stroke-width="0.5"/>
+        <circle cx="20" cy="18" r="4.5" fill="#f0d96a" stroke="#8b6f3a" stroke-width="0.5"/>
+        <circle cx="64" cy="45" r="4" fill="#f0d96a" stroke="#8b6f3a" stroke-width="0.5"/>
+        <circle cx="32" cy="34" r="5" fill="#f0d96a" stroke="#8b6f3a" stroke-width="0.5"/>
+      </svg>
+      <p class="desc-general">Árbol o arbusto pequeño espinoso (2-6 m), característico del 'espinal' del valle central. Copa aparasolada.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Caducas, compuestas bipinnadas, pequeñas (2-4,5 cm), de textura fina, verde claro. En la base de cada hoja, dos espinas blancas rectas de 2 cm.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Castaño oscura, fisurada longitudinalmente con grietas profundas. Ramas tortuosas oscuras.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Flores en pomponcillos amarillo-dorados, muy perfumados, en cabezuelas globosas de 1-2 cm. Florecen en primavera. Fruto: legumbre gruesa cilíndrica casi negra, indehiscente.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Acacia</b>: del griego <i>akakía</i> (ἀκακία), derivado de <i>akís</i> (punta, espina). <b>caven</b>: latinización del nombre mapuche <i>cavén</i>.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>cavén</b> o <b>cabén</b>. No tiene descomposición de raíces documentada: es una palabra primaria. El nombre 'churqui' usado en zonas andinas viene del quechua.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Zona mediterránea y semiárida. Crece en suelos secos y degradados.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El espino es uno de los pocos árboles que ha aumentado su distribución por la acción humana: la tala del bosque esclerófilo nativo dejó espacios que el espino colonizó rápidamente. Lo que hoy parece 'paisaje típico de Chile central' (cerros pelados con espinos dispersos) es en realidad un ecosistema empobrecido que reemplazó al bosque original.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Acacia%20caven" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Acacia%20caven&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Acacia%20caven" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="aextoxicon-punctatum" data-buscable="aextoxicon punctatum olivillo tique aceitunillo palo muerto aextoxicaceae coquimbo fray jorge valparaiso maule biobio la araucania los rios los lagos aysen arbol siempreverde de gran porte hasta 25 m tronco recto arbol fundamental del bosque costero de neblina nativo endemico de la region andina chileno argentina en mapudungun se llama tique o tiqui palabra primaria sin descomposicion documentada olivillo es castellano por la semejanza de sus frutos con aceitunas pequenas" data-zonas="Norte,Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 02 · <span class="familia-tag">Aextoxicaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Aextoxicon punctatum</em> <span class="autor">Ruiz &amp; Pav.</span></h2>
+    <div class="nombres-comunes">Olivillo, Tique, Aceitunillo, Palo muerto</div>
+    <div class="status-badge status-endemico-region" title="Especie monotípica: único miembro de su familia y género. Habita en Chile y un sector reducido del oeste argentino.">Nativo · Endémico de la región andina chileno-argentina</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Aextoxicon punctatum">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 20 45 C 22 25, 38 18, 55 15 C 50 35, 42 50, 20 45" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1.5"/>
+        <path d="M 20 45 Q 38 32 55 15" stroke="#4a8e5e" stroke-width="1.5" fill="none"/>
+        <circle cx="28" cy="32" r="1" fill="#8b6f3a"/><circle cx="34" cy="26" r="1" fill="#8b6f3a"/>
+        <circle cx="44" cy="22" r="1" fill="#8b6f3a"/><circle cx="38" cy="38" r="1" fill="#8b6f3a"/>
+        <circle cx="46" cy="34" r="1" fill="#8b6f3a"/>
+        <path d="M 45 42 L 52 56" stroke="#6b6b6b" stroke-width="1.5" fill="none"/>
+        <ellipse cx="54" cy="60" r="4" rx="3" ry="5" fill="#3a3a5a" stroke="#2a2a2a" stroke-width="0.5"/>
+      </svg>
+      <p class="desc-general">Árbol siempreverde de gran porte (hasta 25 m), tronco recto. Árbol fundamental del bosque costero de neblina.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, opuestas, lanceoladas (5-10 cm), enteras, verde oscuro brillante por arriba y plateado-escamoso por debajo. El envés punteado es la clave para identificarlo.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Lisa, gris-blanquecina en árboles jóvenes; más oscura y agrietada en adultos. Tronco frecuentemente cubierto de musgos y líquenes.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Pequeñas, blanco-amarillentas, en racimos colgantes. Fruto en drupa ovoide morada-negruzca, parecida a una pequeña aceituna (de ahí 'olivillo').</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Aextoxicon</b>: del griego <i>aix, aigós</i> (cabra) + <i>toxikón</i> (veneno), por la creencia (errónea) de que era tóxico para las cabras. <b>punctatum</b>: del latín, 'punteado', por las escamas de sus hojas.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>tique</b> o <b>tiqui</b>, palabra primaria sin descomposición documentada. 'Olivillo' es castellano, por la semejanza de sus frutos con aceitunas pequeñas.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Bosques costeros donde la neblina (camanchaca) aporta humedad. Cordillera de la Costa y cordones andinos bajos.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>Es el árbol estrella del Parque Nacional Bosque Fray Jorge, en pleno semiárido de Coquimbo, donde sobrevive un bosque reliquia gracias a la neblina costera. Es un ecosistema 'fantasma' del pasado glacial: cuando el clima de Chile central era más húmedo, este bosque cubría grandes extensiones. Hoy es un fósil viviente atrapado entre el desierto y el océano.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Aextoxicon%20punctatum" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Aextoxicon%20punctatum&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Aextoxicon%20punctatum" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="araucaria-araucana" data-buscable="araucaria araucana araucaria pehuen pino araucano pinonero araucariaceae biobio nahuelbuta la araucania conifera milenaria hasta 50 m copa en forma de paraguas o candelabro en arboles adultos vive mas de 1 000 anos nativo endemico de chile y argentina en mapudungun el termino pewenche se compone de pewen la araucaria che gente gente del pehuen la palabra pewen en si misma es una raiz primaria a las semillas se les llama ngulliu pinones" data-zonas="Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 03 · <span class="familia-tag">Araucariaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Araucaria araucana</em> <span class="autor">(Molina) K. Koch</span></h2>
+    <div class="nombres-comunes">Araucaria, Pehuén, Pino araucano, Piñonero</div>
+    <div class="status-badge status-endemico-region" title="Habita exclusivamente en una franja restringida entre Chile y Argentina. Monumento Natural de Chile desde 1976.">Nativo · Endémico de Chile y Argentina</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Araucaria araucana">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 40 72 L 40 32" stroke="#5a4d20" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M 40 38 Q 24 35 16 26 Q 22 24 36 34" fill="#1f4e2c" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 40 38 Q 56 35 64 26 Q 58 24 44 34" fill="#1f4e2c" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 40 46 Q 20 44 14 36 Q 22 34 36 42" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 40 46 Q 60 44 66 36 Q 58 34 44 42" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1"/>
+        <ellipse cx="40" cy="24" r="16" ry="7" fill="#1f4e2c"/>
+      </svg>
+      <p class="desc-general">Conífera milenaria (hasta 50 m), copa en forma de paraguas o candelabro en árboles adultos. Vive más de 1.000 años.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, en forma de escamas rígidas, lanceoladas-triangulares, terminadas en una punta muy aguda y punzante (3-4 cm). Color verde oscuro brillante. Cubren densamente las ramas.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Gruesa (hasta 15 cm), corchosa, dividida en placas poligonales como mosaico, gris-pardo. Adaptación contra incendios.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Planta dioica (machos y hembras separados). Conos masculinos cilíndricos amarillentos; conos femeninos esféricos grandes (15-20 cm) que contienen los piñones (semillas comestibles).</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Araucaria</b>: de 'Arauco', territorio mapuche, latinizado por Antoine de Jussieu en 1789. <b>araucana</b>: refuerza la procedencia geográfica.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>pewen</b>. El término <b>pewenche</b> se compone de <b>pewen</b> (la araucaria) + <b>che</b> (gente) = 'gente del pehuén'. A las semillas se les llama <b>ngülliu</b> (piñones).</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Cordillera de los Andes y Nahuelbuta entre 600-1.800 msnm. Bosques de araucaria.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El piñón fue la base alimenticia del pueblo pehuenche: en otoño viajaban a las 'piñonadas' para cosecharlos. Una sola araucaria adulta puede producir hasta 200 kilos de piñones al año, y las familias almacenaban estos frutos en silos enterrados ('cuevi') para tener alimento todo el año. La planta es dioica: hay araucarias macho y hembra, pero solo las hembras dan piñones.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Araucaria%20araucana" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Araucaria%20araucana&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Araucaria%20araucana" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="austrocedrus-chilensis" data-buscable="austrocedrus chilensis cipres de la cordillera cipres chileno len cupressaceae metropolitana o higgins maule nuble biobio la araucania los rios los lagos aysen conifera de porte piramidal hasta 20 m copa angosta y columnar especies muy longevas mas de 1 500 anos nativo endemico de chile y argentina en mapudungun se llama len lleng o leng palabra primaria sin descomposicion clara el toponimo lenga y muchos nombres geograficos del sur derivan de raices vinculadas a arboles" data-zonas="Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 04 · <span class="familia-tag">Cupressaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Austrocedrus chilensis</em> <span class="autor">(D.Don) Pic.Serm. &amp; Bizzarri</span></h2>
+    <div class="nombres-comunes">Ciprés de la cordillera, Ciprés chileno, Len</div>
+    <div class="status-badge status-endemico-region" title="Habita solo en los Andes patagónicos de Chile y Argentina. Especie de gran longevidad.">Nativo · Endémico de Chile y Argentina</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Austrocedrus chilensis">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 40 70 L 40 14" stroke="#8b6f3a" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M 40 15 L 28 55 L 52 55 Z" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 40 22 L 31 50 L 49 50 Z" fill="#4a8e5e" stroke="#1f4e2c" stroke-width="0.5"/>
+        <path d="M 40 55 L 24 62 M 40 58 L 54 64" stroke="#8b6f3a" stroke-width="1.5"/>
+      </svg>
+      <p class="desc-general">Conífera de porte piramidal (hasta 20 m), copa angosta y columnar. Especies muy longevas (más de 1.500 años).</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, en forma de escamas pequeñas (2-4 mm), dispuestas en parejas opuestas que cubren las ramillas. Color verde-azulado con bandas blanquecinas en el envés. Aromáticas al frotar.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Pardo-rojiza, fibrosa, se desprende en tiras longitudinales largas. Característica diagnóstica.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Planta dioica. Conos masculinos amarillentas pequeños; conos femeninos ovoides (1 cm) con 4 escamas leñosas, verde-azulados antes de madurar.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Austrocedrus</b>: del latín <i>auster</i> (sur) + <i>cedrus</i> (cedro) = 'cedro del sur'. <b>chilensis</b>: de Chile.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>len</b>, <b>lleng</b> o <b>leng</b>, palabra primaria sin descomposición clara. El topónimo <b>Lenga</b> y muchos nombres geográficos del sur derivan de raíces vinculadas a árboles.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Precordillera y cordillera andina, sectores secos y rocosos entre 600-1.800 msnm.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El ciprés de la cordillera es uno de los árboles más longevos de Chile: hay registros de ejemplares de más de 1.500 años. Su madera era tan apreciada que la explotación masiva durante los siglos XIX y XX redujo enormemente su distribución. Hoy sufre del 'mal del ciprés', una enfermedad causada por el hongo Phytophthora austrocedri que ha diezmado bosques completos.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Austrocedrus%20chilensis" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Austrocedrus%20chilensis&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Austrocedrus%20chilensis" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="beilschmiedia-berteroana" data-buscable="beilschmiedia berteroana belloto del sur belloto lauraceae o higgins maule nuble biobio arbol siempreverde de tamano mediano 15 25 m copa redondeada follaje denso nativo endemico de chile sin nombre mapuche documentado belloto es palabra castellana derivada de bellota por la semejanza de sus frutos con las bellotas de los robles europeos" data-zonas="Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 05 · <span class="familia-tag">Lauraceae</span></div>
+    <h2 class="nombre-cientifico"><em>Beilschmiedia berteroana</em> <span class="autor">(Gay) Kosterm.</span></h2>
+    <div class="nombres-comunes">Belloto del sur, Belloto</div>
+    <div class="status-badge status-endemico-chile" title="Exclusivo de Chile. Monumento Natural desde 1995. En peligro de extinción (UICN).">Nativo · Endémico de Chile</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Beilschmiedia berteroana">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 15 62 Q 35 48 65 30" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 32 44 C 20 30, 24 15, 45 22 C 38 34, 38 42, 32 44" fill="#4a8e5e" stroke="#2e6b3f" stroke-width="1"/>
+        <path d="M 46 41 L 52 46" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 50 49 C 48 45, 55 42, 56 46 Z" fill="#c9a877" stroke="#8b6f3a" stroke-width="0.5"/>
+        <ellipse cx="58" cy="54" r="5" rx="4" ry="7" fill="#c99c4a" stroke="#8b6f3a" stroke-width="1" transform="rotate(-30 58 54)"/>
+      </svg>
+      <p class="desc-general">Árbol siempreverde de tamaño mediano (15-25 m), copa redondeada, follaje denso.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, alternas, elíptico-oblongas (8-15 cm), enteras, verde oscuro brillante por arriba, más pálidas por abajo. Coriáceas.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Lisa, gris-parduzca a marrón oscura. Tronco recto y cilíndrico.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Pequeñas, amarillo-verdosas, agrupadas en panículas axilares. Fruto en drupa grande, ovoide-alargada (3-4 cm), parecida a una bellota (de ahí 'belloto'), de color verde-amarillento.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Beilschmiedia</b>: honra a Carl Traugott Beilschmied (botánico alemán, 1793-1848). <b>berteroana</b>: por Carlo Giuseppe Bertero, naturalista italiano.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>Sin nombre mapuche documentado. <i>Belloto</i> es palabra castellana derivada de 'bellota', por la semejanza de sus frutos con las bellotas de los robles europeos.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Pocas localidades aisladas de la cordillera de la Costa y precordillera andina del centro-sur. Quebradas húmedas.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El belloto del sur ha quedado tan fragmentado que muchos ejemplares adultos están aislados: aunque florecen y dan frutos, no hay polinizadores ni dispersores suficientes para que prosperen plántulas. Es lo que los ecólogos llaman 'muertos vivientes': árboles maduros sin descendencia, condenados a desaparecer si no se interviene.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Beilschmiedia%20berteroana" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Beilschmiedia%20berteroana&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Beilschmiedia%20berteroana" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="beilschmiedia-miersii" data-buscable="beilschmiedia miersii belloto del norte belloto lauraceae valparaiso metropolitana o higgins arbol siempreverde grande hasta 25 m copa amplia crece en quebradas humedas mediterraneas nativo endemico de chile sin nombre mapuche documentado belloto es palabra castellana por la semejanza del fruto con la bellota" data-zonas="Centro">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 06 · <span class="familia-tag">Lauraceae</span></div>
+    <h2 class="nombre-cientifico"><em>Beilschmiedia miersii</em> <span class="autor">(Gay) Kosterm.</span></h2>
+    <div class="nombres-comunes">Belloto del norte, Belloto</div>
+    <div class="status-badge status-endemico-chile" title="Exclusivo de Chile central. Monumento Natural desde 1995. En peligro de extinción.">Nativo · Endémico de Chile</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Beilschmiedia miersii">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 65 65 Q 45 45 15 35" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 42 44 C 54 36, 62 18, 44 26 C 36 34, 38 42, 42 44" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 32 38 C 22 24, 14 12, 28 15 C 32 24, 30 32, 32 38" fill="#4a8e5e" stroke="#2e6b3f" stroke-width="1"/>
+        <path d="M 45 45 L 50 54" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <circle cx="53" cy="58" r="6" fill="#bca368" stroke="#8b6f3a" stroke-width="1"/>
+        <path d="M 49 54 Q 53 52 57 56" stroke="#8b6f3a" stroke-width="0.5" fill="none"/>
+      </svg>
+      <p class="desc-general">Árbol siempreverde grande (hasta 25 m), copa amplia. Crece en quebradas húmedas mediterráneas.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, alternas, elíptico-lanceoladas (6-12 cm), enteras, verde brillante. Olor aromático al estrujarlas (familia Lauraceae).</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Lisa, gris-clara a oscura. Tronco cilíndrico y recto.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Diminutas, blanco-amarillentas, agrupadas en panículas axilares. Fruto en drupa grande ovoide-elipsoidal (3-5 cm), verde-amarillento, similar a una bellota grande.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Beilschmiedia</b>: por Carl Traugott Beilschmied. <b>miersii</b>: por John Miers, botánico inglés del siglo XIX.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>Sin nombre mapuche documentado. <i>Belloto</i> es palabra castellana, por la semejanza del fruto con la bellota.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Quebradas profundas de la cordillera de la Costa y precordillera andina del centro-norte de Chile.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El belloto del norte se mantiene gracias a un curioso aliado: las ranas chilenas y las lluvias invernales que mantienen las quebradas frescas en verano. Sus frutos eran consumidos por la fauna del pasado (megafauna del Pleistoceno) y hoy quedan en gran parte sin dispersores naturales, lo que dificulta su regeneración.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Beilschmiedia%20miersii" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Beilschmiedia%20miersii&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Beilschmiedia%20miersii" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="citronella-mucronata" data-buscable="citronella mucronata naranjillo huillipatagua cardiopteridaceae coquimbo valparaiso metropolitana o higgins maule nuble biobio la araucania los rios arbol siempreverde mediano 8 15 m copa densa y redondeada crecimiento lento nativo endemico de chile en mapudungun se llama huillipatagua palabra compuesta huilli sur patagua otro arbol crinodendron patagua patagua del sur caso interesante de derivacion a partir de otra planta conocida" data-zonas="Norte,Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 07 · <span class="familia-tag">Cardiopteridaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Citronella mucronata</em> <span class="autor">(Ruiz &amp; Pav.) D.Don</span></h2>
+    <div class="nombres-comunes">Naranjillo, Huillipatagua</div>
+    <div class="status-badge status-endemico-chile" title="Exclusivo de Chile. No se encuentra en ningún otro país.">Nativo · Endémico de Chile</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Citronella mucronata">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 18 52 C 22 28, 44 24, 60 22 C 50 44, 38 56, 18 52" fill="#4a8e5e" stroke="#2e6b3f" stroke-width="1.5"/>
+        <path d="M 18 52 Q 38 38 60 22" stroke="#2e6b3f" stroke-width="1.5" fill="none"/>
+        <path d="M 60 22 L 65 20" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="24" cy="44" r="2.5" fill="#f0d96a" stroke="#8b6f3a" stroke-width="0.5"/>
+        <circle cx="28" cy="48" r="2" fill="#f0d96a" stroke="#8b6f3a" stroke-width="0.5"/>
+      </svg>
+      <p class="desc-general">Árbol siempreverde mediano (8-15 m), copa densa y redondeada. Crecimiento lento.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, alternas, ovado-lanceoladas (4-8 cm), coriáceas, verde oscuro brillante. Margen entero con punta aguda (mucronada). Aroma cítrico fuerte al estrujarlas.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Grisácea, lisa en jóvenes, más rugosa en adultos.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Pequeñas, blanco-amarillentas, agrupadas en panículas axilares. Fruto en drupa ovoide negruzca (8-12 mm) que recuerda una pequeña aceituna.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Citronella</b>: diminutivo del latín <i>citrus</i> (limonero), por el aroma cítrico de sus hojas. <b>mucronata</b>: del latín <i>mucro</i> (punta), por las hojas terminadas en pequeña punta.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>huillipatagua</b>, palabra compuesta: <b>huilli</b> (sur) + <b>patagua</b> (otro árbol, Crinodendron patagua) = 'patagua del sur'. Caso interesante de derivación a partir de otra planta conocida.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Quebradas y laderas húmedas de la cordillera de la Costa y precordillera. Bosque esclerófilo y valdiviano de transición.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>Si estrujas una hoja entre los dedos, libera un aroma intenso a limón y cítricos, muy similar al de la verdadera citronela usada como repelente de mosquitos. De hecho, sus aceites esenciales contienen compuestos químicos similares, aunque pertenece a una familia botánica completamente distinta.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Citronella%20mucronata" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Citronella%20mucronata&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Citronella%20mucronata" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="cryptocarya-alba" data-buscable="cryptocarya alba peumo lauraceae coquimbo valparaiso metropolitana o higgins maule nuble biobio la araucania arbol siempreverde mediano 10 20 m copa densa y globosa especie clave del bosque esclerofilo nativo endemico de chile y argentina en mapudungun se llama pengu peumo o peuwum es una palabra raiz presente en muchos toponimos de chile central como peumo o higgins" data-zonas="Norte,Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 08 · <span class="familia-tag">Lauraceae</span></div>
+    <h2 class="nombre-cientifico"><em>Cryptocarya alba</em> <span class="autor">(Molina) Looser</span></h2>
+    <div class="nombres-comunes">Peumo</div>
+    <div class="status-badge status-endemico-region" title="Habita en Chile central y un pequeño sector de Argentina.">Nativo · Endémico de Chile y Argentina</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Cryptocarya alba">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 15 50 Q 40 45 65 30" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 24 48 C 15 32, 28 20, 42 28 C 34 38, 30 46, 24 48" fill="#1f4e2c" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 44 40 C 40 22, 58 14, 64 26 C 54 34, 50 38, 44 40" fill="#1f4e2c" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 34 46 L 36 54" stroke="#8b6f3a" stroke-width="1.5" fill="none"/>
+        <ellipse cx="38" cy="58" r="4" rx="3.5" ry="5.5" fill="#c93a3a" stroke="#8b1515" stroke-width="0.5"/>
+        <path d="M 48 38 L 52 48" stroke="#8b6f3a" stroke-width="1.5" fill="none"/>
+        <ellipse cx="54" cy="52" r="4" rx="3.5" ry="5.5" fill="#c93a3a" stroke="#8b1515" stroke-width="0.5" transform="rotate(15 54 52)"/>
+      </svg>
+      <p class="desc-general">Árbol siempreverde mediano (10-20 m), copa densa y globosa. Especie clave del bosque esclerófilo.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, opuestas, ovado-elípticas (3-7 cm), coriáceas, verde oscuro brillante por arriba, glaucas (blanco-azuladas) por debajo. Aromáticas al estrujarlas.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Gris-parduzca, lisa en jóvenes, agrietada longitudinalmente en adultos.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Diminutas, blanco-amarillentas, agrupadas en panículas axilares. Fruto en drupa rojo intenso brillante (1-1,5 cm) al madurar en otoño, comestible.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Cryptocarya</b>: del griego <i>kryptós</i> (oculto) + <i>káryon</i> (nuez), por la semilla oculta en el fruto. <b>alba</b>: del latín, 'blanca'.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>pengu</b>, <b>peumo</b> o <b>peuwüm</b>. Es una palabra raíz presente en muchos topónimos de Chile central como <i>Peumo</i> (O'Higgins).</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Laderas con orientación sur (umbrías) y quebradas húmedas del valle central y cordilleras.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El fruto del peumo se comía tradicionalmente con un truco curioso: NO se mastica el carozo (es muy duro y resinoso). Se cocían en agua tibia hasta que la pulpa se ablandara y luego se chupaban, escupiendo la semilla. La pulpa tiene sabor entre dulce y resinoso, muy distinto a cualquier fruta cultivada.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Cryptocarya%20alba" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Cryptocarya%20alba&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Cryptocarya%20alba" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="dasyphyllum-diacanthoides" data-buscable="dasyphyllum diacanthoides trevo palo santo tayu asteraceae maule nuble biobio la araucania los rios los lagos aysen arbol grande del bosque valdiviano hasta 25 m tronco recto unico arbol grande de la familia asteraceae en chile nativo endemico de chile y argentina en mapudungun se llama trevo o trewo tambien tayu palabras primarias sin descomposicion documentada" data-zonas="Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 09 · <span class="familia-tag">Asteraceae</span></div>
+    <h2 class="nombre-cientifico"><em>Dasyphyllum diacanthoides</em> <span class="autor">(Less.) Cabrera</span></h2>
+    <div class="nombres-comunes">Trevo, Palo santo, Tayú</div>
+    <div class="status-badge status-endemico-region" title="Habita el bosque valdiviano de Chile y zonas vecinas de Argentina.">Nativo · Endémico de Chile y Argentina</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Dasyphyllum diacanthoides">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 15 55 Q 35 48 65 35" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 35 45 C 24 35, 26 22, 42 28 C 38 38, 38 42, 35 45" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 35 45 L 28 50 M 35 45 L 34 53" stroke="#c9a877" stroke-width="1.2"/>
+        <path d="M 52 40 L 58 48" stroke="#8b6f3a" stroke-width="1.5" fill="none"/>
+        <circle cx="58" cy="48" r="4.5" fill="#e8e4d4" stroke="#8b6f3a" stroke-width="0.5"/>
+        <path d="M 58 48 L 64 54 M 59 49 L 66 51 M 57 47 L 62 43" stroke="#6b6b6b" stroke-width="0.8"/>
+      </svg>
+      <p class="desc-general">Árbol grande del bosque valdiviano (hasta 25 m), tronco recto. Único árbol grande de la familia Asteraceae en Chile.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, alternas, ovado-lanceoladas (3-7 cm), coriáceas, verde oscuro brillante. Provistas de dos espinas punzantes en la base de la yema axilar.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Gris-parduzca, agrietada en placas en árboles adultos. Tronco recto, limpio y cilíndrico.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Flores reunidas en capítulos terminales pequeños, blanco-amarillentos, rodeados de brácteas rígidas. Fruto: aquenio velloso provisto de un vilano blanco que facilita su dispersión por el viento.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Dasyphyllum</b>: del griego <i>dasýs</i> (peludo) + <i>phýllon</i> (hoja). <b>diacanthoides</b>: 'parecido a Diacantha', por sus dos espinas axilares.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>trevo</b> o <b>trewo</b>, también <b>tayú</b>. Palabras primarias sin descomposición documentada.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Bosque valdiviano y norpatagónico. Cordillera de los Andes y de la Costa.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>Esta es una rareza botánica mundial: casi todas las Asteraceae son hierbas o arbustos pequeños (piensa en margaritas, girasoles, lechugas, alcachofas). Pero en Chile, la familia desarrolló un árbol gigante que compite con los Nothofagus por luz. Es un caso evolutivo único: las 'margaritas' se transformaron en árboles del bosque.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Dasyphyllum%20diacanthoides" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Dasyphyllum%20diacanthoides&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Dasyphyllum%20diacanthoides" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="drimys-winteri" data-buscable="drimys winteri canelo foike winteraceae coquimbo valparaiso metropolitana o higgins maule nuble biobio la araucania los rios los lagos aysen magallanes arbol siempreverde hasta 20 m tronco grisaceo poco ramificado arbol sagrado del pueblo mapuche nativo no endemico de chile en mapudungun se llama foike foye o voigue los lideres mapuches que portaban un baston de canelo se llamaban ngen foye que significa duenos del canelo ngen dueno espiritu protector" data-zonas="Norte,Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 10 · <span class="familia-tag">Winteraceae</span></div>
+    <h2 class="nombre-cientifico"><em>Drimys winteri</em> <span class="autor">J.R.Forst. &amp; G.Forst.</span></h2>
+    <div class="nombres-comunes">Canelo, Foike</div>
+    <div class="status-badge status-nativo" title="Habita en Chile y Argentina, con la distribución latitudinal más amplia de los árboles chilenos.">Nativo (no endémico de Chile)</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Drimys winteri">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 65 65 Q 40 50 15 35" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 38 44 C 48 34, 52 14, 32 26 C 26 34, 30 42, 38 44" fill="#1f4e2c" stroke="#1f4e2c" stroke-width="1"/>
+        <path d="M 45 48 L 52 53" stroke="#8b6f3a" stroke-width="1.2" fill="none"/>
+        <g transform="translate(54,55)">
+          <path d="M 0 0 L -4 -6 M 0 0 L 4 -6 M 0 0 L 7 -2 M 0 0 L 6 4 M 0 0 L 1 7 M 0 0 L -4 6 M 0 0 L -7 2 M 0 0 L -6 -3" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 0 0 L -4 -6 M 0 0 L 4 -6 M 0 0 L 7 -2 M 0 0 L 6 4 M 0 0 L 1 7 M 0 0 L -4 6 M 0 0 L -7 2 M 0 0 L -6 -3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="0" cy="0" r="2.5" fill="#f0d96a"/>
+        </g>
+      </svg>
+      <p class="desc-general">Árbol siempreverde (hasta 20 m), tronco grisáceo poco ramificado. Árbol sagrado del pueblo mapuche.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes, simples, alternas, elíptico-oblongas (5-15 cm), coriáceas, verde oscuro brillante por arriba y glauco-blanquecinas por el envés. Olor picante al estrujarlas.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Gris-clara, lisa, suave. Rica en taninos y vitamina C (la 'corteza de Winter' antiescorbútica).</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Blancas, jazminoides, fragantes, agrupadas en umbelas terminales o axilares (5-7 pétalos). Florecen en primavera. Fruto en baya negro-azulada de varias semillas.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Drimys</b>: del griego <i>drimýs</i> (acre, picante), por el sabor de su corteza. <b>winteri</b>: por el capitán John Winter, que en 1578 acompañó a Francis Drake y usó esta corteza para curar el escorbuto.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>foike</b>, <b>foye</b> o <b>voigue</b>. Los líderes mapuches que portaban un bastón de canelo se llamaban <b>ngen-foye</b>, que significa 'dueños del canelo' (<i>ngen</i> = dueño, espíritu protector).</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Sitios húmedos cercanos a cursos de agua y mallines.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>John Winter, navegando con Francis Drake en 1578, descubrió que la corteza de este árbol curaba el escorbuto que devastaba a sus marineros. La llevó a Europa como 'corteza de Winter' y se convirtió en uno de los primeros remedios contra esta enfermedad. Razón: tiene altísimo contenido de vitamina C. Los mapuches ya lo sabían: usaban el foike como medicina mucho antes de la llegada de los europeos.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Drimys%20winteri" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Drimys%20winteri&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Drimys%20winteri" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="embothrium-coccineum" data-buscable="embothrium coccineum notro ciruelillo treumun fosforito proteaceae maule nuble biobio la araucania los rios los lagos aysen magallanes arbol pequeno o arbusto 6 15 m copa angosta famoso por su floracion espectacular nativo no endemico de chile en mapudungun se llama notru notro o treumun son palabras raiz sin descomposicion documentada" data-zonas="Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 11 · <span class="familia-tag">Proteaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Embothrium coccineum</em> <span class="autor">J.R.Forst. &amp; G.Forst.</span></h2>
+    <div class="nombres-comunes">Notro, Ciruelillo, Treumún, Fosforito</div>
+    <div class="status-badge status-nativo" title="Habita en Chile y Argentina, con amplia distribución austral.">Nativo (no endémico de Chile)</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Embothrium coccineum">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <path d="M 20 60 Q 40 50 55 35" stroke="#8b6f3a" stroke-width="2" fill="none"/>
+        <path d="M 40 45 C 50 35, 45 15, 30 25 Z" fill="#2e6b3f" stroke="#1f4e2c" stroke-width="1"/>
+        <g stroke="#c93a3a" stroke-width="2.5" stroke-linecap="round" fill="none">
+          <path d="M 48 38 Q 62 30 68 34"/>
+          <path d="M 46 36 Q 58 22 64 25"/>
+          <path d="M 42 42 Q 58 44 62 38"/>
+        </g>
+        <g stroke="#f0d96a" stroke-width="1.2" stroke-linecap="round" fill="none">
+          <path d="M 68 34 L 73 36"/>
+          <path d="M 64 25 L 68 24"/>
+          <path d="M 62 38 L 66 39"/>
+        </g>
+      </svg>
+      <p class="desc-general">Árbol pequeño o arbusto (6-15 m), copa angosta. Famoso por su floración espectacular.</p>
+    </div>
+    <div class="desc-items">
+      <div class="desc-item"><span class="desc-label">Hojas:</span> Perennes (semicaducas en climas fríos), simples, alternas, lanceoladas (5-12 cm), coriáceas, verde oscuro brillante.</div>
+      <div class="desc-item"><span class="desc-label">Corteza:</span> Lisa, gris-clara a parduzca, con lenticelas claras notorias.</div>
+      <div class="desc-item"><span class="desc-label">Flores/Frutos:</span> Tubulares, escarlatas-coccíneas brillantes, agrupadas en racimos terminales muy llamativos. Florecen en primavera-verano. Atraen al picaflor. Fruto en folículo leñoso con semillas aladas.</div>
+    </div>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">📖 Etimología científica</div>
+    <p><b>Embothrium</b>: del griego <i>en</i> (dentro) + <i>bóthrion</i> (pequeño hoyo), por las anteras hundidas en cavidades. <b>coccineum</b>: del latín, 'escarlata'.</p>
+  </div>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🪶 Nombre en mapudungun</div>
+    <p>En mapudungun se llama <b>notru</b>, <b>notro</b> o <b>treumún</b>. Son palabras raíz sin descomposición documentada.</p>
+  </div>
+  
+  <div class="bloque distribucion">
+    <div class="bloque-titulo">📍 Dónde encontrarlo</div>
+    <p>Cordillera de los Andes y la Costa. Especie pionera tras incendios.</p>
+  </div>
+  
+  <div class="bloque curiosidad">
+    <div class="bloque-titulo">💡 Dato curioso</div>
+    <p>El nombre 'fosforito' viene de que su madera arde con tanta facilidad que prende como cerilla, incluso estando verde. Esto, sumado a que es de las primeras especies en colonizar áreas quemadas, la convierte en una especie de doble cara con el fuego: vulnerable a él en su forma adulta, pero ganadora ecológica después del incendio porque coloniza el terreno antes que otras.</p>
+  </div>
+  
+  <div class="bloque-fotos">
+    <span class="fotos-label">📷 Ver fotos:</span>
+    <a href="https://www.inaturalist.org/search?q=Embothrium%20coccineum" target="_blank" rel="noopener">iNaturalist</a>
+    <a href="https://www.google.com/search?q=Embothrium%20coccineum&tbm=isch" target="_blank" rel="noopener">Google</a>
+    <a href="https://es.wikipedia.org/wiki/Embothrium%20coccineum" target="_blank" rel="noopener">Wikipedia</a>
+  </div>
+</article>
+
+<article class="ficha" id="eucryphia-cordifolia" data-buscable="eucryphia cordifolia ulmo muermo cunoniaceae maule nuble biobio la araucania los rios los lagos aysen arbol grande del bosque valdiviano hasta 40 m tronco recto cilindrico floracion blanca espectacular nativo endemico de chile y argentina en mapudungun se llama ngulmo ulmo o muermo son palabras primarias sin descomposicion conocida" data-zonas="Centro,Sur">
+  <header class="ficha-header">
+    <div class="ficha-num">N° 12 · <span class="familia-tag">Cunoniaceae</span></div>
+    <h2 class="nombre-cientifico"><em>Eucryphia cordifolia</em> <span class="autor">Cav.</span></h2>
+    <div class="nombres-comunes">Ulmo, Muermo</div>
+    <div class="status-badge status-endemico-region" title="Habita el bosque valdiviano chileno y zonas vecinas de Argentina.">Nativo · Endémico de Chile y Argentina</div>
+  </header>
+  
+  <div class="bloque">
+    <div class="bloque-titulo">🌿 Descripción</div>
+    <div class="desc-flex-container">
+      <svg class="ilustracion-botanica" width="75" height="75" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración de Eucryphia cordifolia">
+        <circle cx="40" cy="40" r="38" fill="#fdfbf4"/>
+        <g transform="translate(40,40)">
+          <path d="M 0 0 C -12 -12, -18 -4, -18 10 C -18 18, -10 18, 0 0" fill="white" stroke="#6b6b6b" stroke-width="0.8"/>
+  
