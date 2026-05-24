@@ -46,7 +46,7 @@
     text-align: center;
   }
   .portada::before {
-    content: '🌲';
+    content: '🌿';
     font-size: 3em;
     display: block;
     margin-bottom: 8px;
